@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'authz',
     'dashboard',
+    'my_assets',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

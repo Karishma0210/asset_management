@@ -24,5 +24,6 @@ urlpatterns = [
     path('register/', views.Register.as_view(), name="register"),
     path('', include('dashboard.urls')),
     path('authorize/', include('authz.urls')),
+    path('assets/', include('my_assets.urls')),
 
 ]
