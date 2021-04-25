@@ -4,13 +4,17 @@ from django.contrib.auth.models import auth, User
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
+from .models import Asset
 # Create your views here.
 
 
 @login_required
 def assets(request):
     if request.user in User.objects.filter(groups__name='Organization Admin'):
-        return render(request, 'all_assets.html')
+        context = {
+            'assets': Asset.objects.all()
+        }
+        return render(request, 'all_assets.html', context=context)
     else:
         return redirect(reverse('dashboard:homepage'))
 

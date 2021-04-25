@@ -11,9 +11,10 @@ class Organization(models.Model):
     membership = models.BooleanField(default=False)
     membership_start_date = models.DateField(default=datetime.date.today)
     membership_end_date = models.DateField(null=True)
+    organization_code = models.CharField(max_length=3, unique=True, null=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name_plural = "orgnization"
+        verbose_name_plural = "Orgnizations"
