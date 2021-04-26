@@ -38,7 +38,8 @@ class CreateAsset(View):
                 relative_id__startswith=org_code).order_by('-registration_date')
             asset = form.save(commit=False)
             if len(last_asset) > 0:
-                next_number = str(int(last_asset[0].relative_id[3:]) + 1)[-5:]
+                next_number = str(
+                    (int(last_asset[0].relative_id[3:]) + 1)/100000)[-5:]
             else:
                 next_number = '00001'
             asset.relative_id = org_code + next_number
