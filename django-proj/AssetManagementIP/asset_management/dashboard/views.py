@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views import View
-from django.contrib.auth.models import User
+from authz.models import User
 from django.db.models import Q
 
 

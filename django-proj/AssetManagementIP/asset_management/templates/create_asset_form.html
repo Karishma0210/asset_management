@@ -51,8 +51,30 @@
                     
                     <!-- Main row -->
                     <div class="row">
-                        
-
+                        <div class="card col-sm-12">
+                            <form method="POST" action="{% url 'my_assets:add-asset' %}">
+                                {% csrf_token %}
+                                <div class="card-body">
+                                    {% for field in form %}
+                                    <!-- <div class="row"> -->
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            {{field.errors}}
+                                            {{field.label_tag}}
+                                            {{field}}
+                                        </div>
+                                    </div>
+                                    <!-- </div> -->
+                                    {% endfor %}
+                                    
+                                </div>
+                                <!-- /.card-body -->
+                            
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-primary pull-right">Submit</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                     <!-- /.row (main row) -->
                 </div><!-- /.container-fluid -->

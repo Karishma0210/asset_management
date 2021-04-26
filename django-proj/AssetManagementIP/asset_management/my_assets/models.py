@@ -1,30 +1,35 @@
 from django.db import models
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from django.conf import settings
 
 # Create your models here.
 
 
 class Asset(models.Model):
     relative_id = models.CharField(
-        max_length=8, unique=True, null=True)  # MDX0001
+        max_length=8, unique=True, blank=True, null=True)  # MDX0001, we want auto generated
     name = models.CharField(max_length=127)
     manufacturer = models.ForeignKey('Manufacturer',
                                      on_delete=models.SET_NULL,
+                                     blank=True,
                                      null=True)  # when manufacturer deleted asset manufacturer will be null
     category = models.ForeignKey('Category',
                                  on_delete=models.SET_NULL,
-                                 null=True)
+                                 null=True, blank=True)
     organization = models.ForeignKey('authz.Organization',
                                      on_delete=models.CASCADE,
+                                     blank=True,
                                      null=True)  # if org deleted, all assets will be deleted
     location = models.CharField(max_length=127)
-    purchase_date = models.DateField()
+    purchase_date = models.DateField(blank=True, null=True)
     warranty = models.IntegerField(default=0)
-    last_repair = models.DateField(null=True)
-    asset_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    last_repair = models.DateField(blank=True, null=True)
+    asset_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
     physical_address = models.CharField(
-        max_length=32, null=True)  # for hardware
-    digital_key = models.CharField(max_length=48, null=True)  # for software
+        max_length=32, unique=True, blank=True, null=True)  # for hardware
+    digital_key = models.CharField(
+        max_length=48, blank=True, null=True)  # for software
     # for status field
     AVAILABLE = "available"
     IN_USE = "in use"
@@ -37,7 +42,9 @@ class Asset(models.Model):
     )
     status = models.CharField(choices=STATUS_CHOICES,
                               default=AVAILABLE, max_length=32)
-    note = models.TextField(max_length=200, null=True)  # for any comments
+    note = models.TextField(max_length=200, blank=True,
+                            null=True)  # for any comments
+    registration_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name

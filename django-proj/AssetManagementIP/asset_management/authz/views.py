@@ -1,7 +1,8 @@
 # Create your views here.
 from django.shortcuts import render, redirect, HttpResponse, reverse
 from django.views import View
-from django.contrib.auth.models import auth, User, Group
+from .models import User
+from django.contrib.auth.models import auth, Group
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from authz.models import Organization
@@ -79,6 +80,8 @@ class Register(View):
                         employeeGroup = Group.objects.get(
                             name='Employee')
                         employeeGroup.user_set.add(user)
+                        user.from_organization = Organization.objects.get(
+                            email_domain=email.split("@")[1])
                         user.save()
                         auth.login(request, user)
                         messages.info(request, "Welcome " + firstname + "!")
