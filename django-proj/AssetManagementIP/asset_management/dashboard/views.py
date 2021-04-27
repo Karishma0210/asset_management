@@ -8,7 +8,9 @@ from django.db.models import Q
 # Create your views here.
 @login_required
 def dashboard(request):
-    if request.user in User.objects.filter(Q(groups__name='HR') | Q(groups__name='Employee')):
+    if request.user in User.objects.filter(groups__name='Employee'):
         return render(request, 'employee_dashboard.html')
+    elif request.user in User.objects.filter(groups__name='HR'):
+        return render(request, 'hr_dashboard.html')
     elif request.user in User.objects.filter(groups__name='Organization Admin'):
         return render(request, 'dashboard_home.html')

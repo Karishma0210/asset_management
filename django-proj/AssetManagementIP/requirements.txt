@@ -3,3 +3,5 @@
 
 django-admin
 django
+qrcode
+pillow

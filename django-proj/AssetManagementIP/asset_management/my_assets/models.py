@@ -78,3 +78,14 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class AssestsFile(models.Model):
+    importedFile = models.FileField(upload_to='')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+
+    def delete(self, *args, **kwargs):
+        self.importedFile.delete()
+        super().delete(*args, **kwargs)

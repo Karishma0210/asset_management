@@ -85,7 +85,7 @@
                   <tbody>
                   {% for asset in assets %}
                     <tr>
-                      <td>{{asset.id}}</td>
+                      <td><a href="{% url 'my_assets:show-qr' asset_rID=asset.relative_id %}">{{asset.relative_id}}</a></td>
                       <td>{{asset.name}}</td>
                       <td>{{asset.manufacturer}}
                       </td>
