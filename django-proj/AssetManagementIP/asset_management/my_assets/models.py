@@ -1,6 +1,11 @@
 from django.db import models
 # from django.contrib.auth.models import User
 from django.conf import settings
+import qrcode
+import qrcode.image.svg
+from PIL import Image, ImageDraw
+from io import BytesIO
+from django.core.files import File
 
 # Create your models here.
 
@@ -49,10 +54,6 @@ class Asset(models.Model):
     def __str__(self):
         return self.name
 
-    # @property
-    # def relative_id(self):
-    #     return "A%05d" % self.id
-
 
 class Category(models.Model):
     name = models.CharField(max_length=127)
@@ -88,4 +89,39 @@ class AssestsFile(models.Model):
 
     def delete(self, *args, **kwargs):
         self.importedFile.delete()
+        super().delete(*args, **kwargs)
+
+
+class QRCodeImage(models.Model):
+    name = models.CharField(max_length=255)
+    qrSvg = models.ImageField(upload_to='QRCodes', blank=True)
+    asset = models.ForeignKey('Asset', on_delete=models.CASCADE,
+                              blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_Q,  # <25% error handling
+            box_size=6,
+            border=4,
+        )
+        qr.add_data(self.name)
+        qr.make(fit=True)
+        qrcode_img = qr.make_image(fill_color="black", back_color="white")
+        canvas = Image.new('RGB', (qrcode_img.pixel_size,
+                                   qrcode_img.pixel_size), 'white')
+        draw = ImageDraw.Draw(canvas)
+        canvas.paste(qrcode_img)
+        buffer = BytesIO()
+        canvas.save(buffer, format='PNG')
+        filename = 'qr_' + self.asset.relative_id + '.png'
+        self.qrSvg.save(filename, File(buffer), save=False)
+        canvas.close()
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.qrSvg.delete()
         super().delete(*args, **kwargs)

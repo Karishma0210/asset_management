@@ -91,7 +91,10 @@
     </div>
     <!-- ./wrapper -->
     {% include "script_tags.html" %}
-   
+   <script>
+            // Will add active class to assets
+            $('ul.nav a[href="/assets/"]').addClass('active');
+    </script>
 </body>
 
 </html>

@@ -5,14 +5,16 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.views import View
-from .models import Asset, AssestsFile, Category, Manufacturer
+from .models import Asset, AssestsFile, Category, Manufacturer, QRCodeImage
 from .forms import AssetCreateForm
 from django.conf import settings
 from authz.models import User
 from django.db.utils import IntegrityError, OperationalError
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 import csv
 import datetime
+import traceback
 # Create your views here.
 
 
@@ -48,23 +50,19 @@ class CreateAsset(View):
                 relative_id__startswith=org_code).order_by('-registration_date')
             asset = form.save(commit=False)
             if len(last_asset) > 0:
-                next_number = str(
-                    (float(last_asset[0].relative_id[3:]) + 1)/100000)[-5:]
+                next_number = format(
+                    (int(last_asset[0].relative_id[3:])+1)/100000, '.5f')[-5:]
             else:
                 next_number = '00001'
             asset.relative_id = org_code + next_number
             asset.organization = organization
             asset.save()
+            asset_qr = QRCodeImage(
+                name=request.build_absolute_uri() + asset.relative_id)
+            asset_qr.save()
             return redirect(reverse('my_assets:show-qr', kwargs={'asset_rID': "MDX00001"}))
 
         return HttpResponse("unvalid form")
-
-
-def showQR(request, asset_rID):
-    context = {
-        'code': asset_rID
-    }
-    return render(request, 'show_qr_code.html', context=context)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -92,7 +90,6 @@ class ImportAssets(View):
                         # check if assets non blank fields exists
                         # print(line)
                         if line['Asset Name'] != '' and line['Category'] != '' and line['Asset Status'] != '':
-                            # print(line)
                             # print(Category.objects.filter(
                             #     name=line['Category'].lower().title()))
                             category, _is_created_ = Category.objects.get_or_create(
@@ -101,7 +98,7 @@ class ImportAssets(View):
                             status = line['Asset Status'].lower()
                             isValidStatus = (
                                 status == Asset.AVAILABLE or status == Asset.IN_USE or status == Asset.NEED_MAINTENANCE)
-                            print("Is Valid status", isValidStatus)
+                            # print("Is Valid status", isValidStatus)
                             if isValidStatus:
                                 # get last orgnizational asset id, add orgnization
                                 organization = request.user.from_organization
@@ -110,8 +107,7 @@ class ImportAssets(View):
                                     relative_id__startswith=org_code).order_by('-registration_date')
                                 # print(last_asset)
                                 if len(last_asset) > 0:
-                                    # print(format((int(last_asset[0].relative_id[3:])+1)/100000, '.5f')[-5:]
-                                    #       )
+                                    # 00002
                                     next_number = format(
                                         (int(last_asset[0].relative_id[3:])+1)/100000, '.5f')[-5:]
 
@@ -196,6 +192,9 @@ class ImportAssets(View):
                         else:
                             fields_with_errors.append(
                                 (curr_line_number, "all"))
+                        asset_qr = QRCodeImage(
+                            name=request.build_absolute_uri() + asset.relative_id)
+                        asset_qr.save()
                     return redirect(reverse('my_assets:import-assets'))
                 except IntegrityError as ex:
                     messages.info(
@@ -205,20 +204,27 @@ class ImportAssets(View):
                         request, "Database is locked!, try again")
                 except Exception as ex:
                     print(ex.__class__)
-                    print(ex)
+                    traceback.print_exc()
                     print("MAIN TRY CATCH ERROR")
 
+            importFile.delete()
         return redirect(reverse('my_assets:import-assets'))
 
 
 def showAsset(request, asset_rID):
-    asset = Asset.objects.get(relative_id=asset_rID)
-    context = {
-        'asset': asset,
-        'employeeList': getEmployees(request.user.from_organization),
-        'adminList': getAdmins(request.user.from_organization)
-    }
-    return render(request, 'show_asset.html', context=context)
+    try:
+        asset = Asset.objects.get(relative_id=asset_rID)
+        qrCodeImg, _is_created_ = QRCodeImage.objects.get_or_create(
+            asset=asset, name=request.build_absolute_uri())
+        context = {
+            'asset': asset,
+            'employeeList': getEmployees(request.user.from_organization),
+            'adminList': getAdmins(request.user.from_organization),
+            'qrCodeImg': qrCodeImg
+        }
+        return render(request, 'show_asset.html', context=context)
+    except ObjectDoesNotExist:
+        return HttpResponse("Asset Does not exist", 404)
 
 
 def getEmployees(org):
