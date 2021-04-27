@@ -74,8 +74,7 @@
                                 </div>
                                 <div class="card-footer">
                                     {% for msg in messages %}
-                                    
-                                    <span class="alert alert-error pull-left" role="alert" style="text-align: center; padding:5px">
+                                    <span class="alert alert-info pull-left" role="alert" style="text-align: center; padding:5px">
                                         {% if 'safe' in msg.tags %}{{ message|safe }}{% else %}{{ msg }}{% endif %}
                                     </span>
                                     {% endfor %}

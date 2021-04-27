@@ -6,5 +6,6 @@ urlpatterns = [
     path('', views.assets, name='assets'),
     path('add-asset', views.CreateAsset.as_view(), name='add-asset'),
     path('import-assets', views.ImportAssets.as_view(), name='import-assets'),
-    path('<str:asset_rID>', views.showQR, name='show-qr'),
+    path('<str:asset_rID>', views.showAsset, name='show-asset'),
+    path('qr/<str:asset_rID>', views.showQR, name='show-qr'),
 ]

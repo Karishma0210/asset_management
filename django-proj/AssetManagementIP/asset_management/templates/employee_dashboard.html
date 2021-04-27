@@ -35,7 +35,11 @@
                             <h1 class="m-0">Acquired Assets</h1>
                         </div><!-- /.col -->
                         <div class="col-sm-6">
-                            
+                            {% for msg in messages %}
+                            <span class="alert alert-info pull-left" role="alert" style="text-align: center; padding:5px">
+                                {% if 'safe' in msg.tags %}{{ message|safe }}{% else %}{{ msg }}{% endif %}
+                            </span>
+                            {% endfor %}
                         </div>
                     </div><!-- /.row -->
                 </div><!-- /.container-fluid -->

@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Assets | Dashboard</title>
+
+    {% include "headtags.html" %}
+
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+
+    <div class="wrapper">
+
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__shake" src="{% static 'dist/img/logo.png' %}" alt="My Assets Logo" height="60"
+                width="60">
+        </div>
+
+        {% include "navbar.html" %}
+
+        {% include "sidebar.html" %}
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">Asset ID {{asset.relative_id}}</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="{% url 'my_assets:assets' %}">Assets</a></li>
+                                <li class="breadcrumb-item active">Show Asset</li>
+                            </ol>
+                        </div>
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    <!-- Small boxes (Stat box) -->
+                    <div class="row">
+                        <div class="col-sm-8">
+                        
+                        <table class="table table-striped">
+                            <tr>
+                                <td colspan="2">Image will come here</td>
+                            </tr>
+                            <tr>
+                                <th>Asset ID</th>
+                                <td>{{asset.relative_id}}</td>
+                            </tr>
+                            <tr>
+                                <th>Name</th>
+                                <td>{{asset.name}}</td>
+                            </tr>
+                            {% if user.is_authenticated %}
+                            <tr>
+                                <th>Status</th>
+                                <td>{{asset.status}}</td>
+                            </tr>
+                            {% endif %}
+                            {% if user in adminList%}
+                            <tr>
+                                <th>Physical Address</th>
+                                <td>{{asset.physical_address}}</td>
+                            </tr>
+                            <tr>
+                                <th>Digital Address</th>
+                                <td>{{asset.digital_address}}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th>Category</th>
+                                <td>{{asset.category}}</td>
+                            </tr>
+                            <tr>
+                                <th>Location</th>
+                                <td>{{asset.location}}</td>
+                            </tr>
+                            {% if user.is_authenticated %}
+                            <tr>
+                                <th>Asset User</th>
+                                <td>{{asset.asset_user}}</td>
+                            </tr>
+                            {% endif %}
+                            {% if user in adminList %}
+                            <tr>
+                                <th>Purchase Date</th>
+                                <td>{{asset.purchase_date}}</td>
+                            </tr>
+                            <tr>
+                                <th>Last Repair</th>
+                                <td>{{asset.last_repair}}</td>
+                            </tr>
+                            <tr>
+                                <th>Warranty</th>
+                                <td>{{asset.warranty}}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th>Manufacturer</th>
+                                <td>{{asset.manufacturer}}</td>
+                            </tr>
+                            <tr>
+                                <th>Organization</th>
+                                <td>{{asset.organization}}</td>
+                            </tr>
+                        </table>
+                        </div>
+                    </div>
+                    <!-- /.row (main row) -->
+                </div><!-- /.container-fluid -->
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+        
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
+    {% include "script_tags.html" %}
+    <script>
+            // Will add active class to assets
+            $('ul.nav a[href="/assets/"]').addClass('active');
+    </script>
+</body>
+
+</html>

@@ -10,6 +10,7 @@ from .forms import AssetCreateForm
 from django.conf import settings
 from authz.models import User
 from django.db.utils import IntegrityError, OperationalError
+from django.db.models import Q
 import csv
 import datetime
 # Create your views here.
@@ -208,3 +209,25 @@ class ImportAssets(View):
                     print("MAIN TRY CATCH ERROR")
 
         return redirect(reverse('my_assets:import-assets'))
+
+
+def showAsset(request, asset_rID):
+    asset = Asset.objects.get(relative_id=asset_rID)
+    context = {
+        'asset': asset,
+        'employeeList': getEmployees(request.user.from_organization),
+        'adminList': getAdmins(request.user.from_organization)
+    }
+    return render(request, 'show_asset.html', context=context)
+
+
+def getEmployees(org):
+    return User.objects.filter(Q(groups__name='Employee') & Q(from_organization=org))
+
+
+def getHRs(org):
+    return User.objects.filter(Q(groups__name='HR') & Q(from_organization=org))
+
+
+def getAdmins(org):
+    return User.objects.filter(Q(groups__name="Organization Admin") & Q(from_organization=org))

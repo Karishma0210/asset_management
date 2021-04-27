@@ -34,12 +34,13 @@
                         <div class="col-sm-6">
                             <h1 class="m-0">HR Panel</h1>
                         </div><!-- /.col -->
-                        <!-- <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="{% url 'my_assets:assets' %}">Assets</a></li>
-                                <li class="breadcrumb-item active"></li>
-                            </ol>
-                        </div> -->
+                        <div class="col-sm-6">
+                            {% for msg in messages %}
+                            <span class="alert alert-info pull-left" role="alert" style="text-align: center; padding:5px">
+                                {% if 'safe' in msg.tags %}{{ message|safe }}{% else %}{{ msg }}{% endif %}
+                            </span>
+                            {% endfor %}
+                        </div>
                     </div><!-- /.row -->
                 </div><!-- /.container-fluid -->
             </div>
