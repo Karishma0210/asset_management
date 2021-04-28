@@ -193,7 +193,7 @@ class ImportAssets(View):
                             fields_with_errors.append(
                                 (curr_line_number, "all"))
                         asset_qr = QRCodeImage(
-                            name=request.build_absolute_uri() + asset.relative_id)
+                            asset=asset, name=request.build_absolute_uri() + asset.relative_id)
                         asset_qr.save()
                     return redirect(reverse('my_assets:import-assets'))
                 except IntegrityError as ex:
