@@ -216,10 +216,19 @@ def showAsset(request, asset_rID):
         asset = Asset.objects.get(relative_id=asset_rID)
         qrCodeImg, _is_created_ = QRCodeImage.objects.get_or_create(
             asset=asset, name=request.build_absolute_uri())
+
+        employeeList = []
+        adminList = []
+        if request.user.is_authenticated:
+            employeeList = getEmployees(request.user.from_organization)
+            adminList = getAdmins(request.user.from_organization)
+        else:
+            employeeList = []
+            adminList = []
         context = {
             'asset': asset,
-            'employeeList': getEmployees(request.user.from_organization),
-            'adminList': getAdmins(request.user.from_organization),
+            'employeeList': employeeList,
+            'adminList': adminList,
             'qrCodeImg': qrCodeImg
         }
         return render(request, 'show_asset.html', context=context)
