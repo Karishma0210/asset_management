@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Assets | Employee Panel </title>
+
+    {% include "headtags.html" %}
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+
+    <div class="wrapper">
+
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__shake" src="{% static 'dist/img/logo.png' %}" alt="My Assets Logo" height="60"
+                width="60">
+        </div>
+
+        {% include "navbar.html" %}
+
+        {% include "employee_sidebar.html" %}
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">Request Asset</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            {% for msg in messages %}
+                            <span class="alert alert-info pull-left" role="alert" style="text-align: center; padding:5px">
+                                {% if 'safe' in msg.tags %}{{ message|safe }}{% else %}{{ msg }}{% endif %}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    
+                    <!-- Main row -->
+                    <div class="row">
+                        <div class="card col-sm-10">
+                            <form action="{% url 'employee_side:request-asset' %}" method="post">
+                                {% csrf_token %}
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="assetDescrip">Asset Name (Description)</label>
+                                        <input type="text" name="assetDescrip" class="form-control" placeholder="Lenevo G50" required>
+                                    </div>
+                                    <!-- Category -->
+                                    <div class="form-group">
+                                        <label for="category">Category</label>
+                                        <select type="text" name="category" class="form-control" required>
+                                            <option value="" selected>Category</option>
+                                            {% for category in categories %}
+                                            <option value="{{category.id}}">{{category.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!-- Date of requirement -->
+                                    <div class="form-group">
+                                        <label for="rq_date">Requirement Date:</label>
+                                        <input type="date" class="form-control" name="rq_date">
+                                    </div>
+                                    <!-- select HR -->
+                                    <div class="form-group">
+                                        <label for="category">Request to:</label>
+                                        <select type="text" name="hr" class="form-control" required>
+                                            <option value="" selected>HR</option>
+                                            {% for hr in hrs %}
+                                            <option value="{{hr.id}}">{{hr.first_name}} {{hr.last_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!-- Return Date -->
+                                    <div class="form-group">
+                                        <label for="rt_date">Return Date:</label>
+                                        <input type="date" class="form-control" name="rt_date">
+                                    </div>
+                                    <!-- Requirement Note -->
+                                    <div class="form-group">
+                                        <label for="rq_msg">Requirement Message:</label>
+                                        <textarea class="form-control" name="rq_msg" rows="4" cols="50"></textarea>
+                                    </div>
+                                </div> <!--card body-->
+                                <!-- card footer -->
+                                <div class="card-footer">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </div>
+                                <!-- card footer end -->
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /.row (main row) -->
+                </div><!-- /.container-fluid -->
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
+    {% include "script_tags.html" %}
+
+</body>
+
+</html>

@@ -57,6 +57,10 @@ class Asset(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=127)
+    organization = models.ForeignKey('authz.Organization',
+                                     on_delete=models.CASCADE,
+                                     blank=True,
+                                     null=True)  # if org deleted, all assets will be deleted
 
     def __str__(self):
         return self.name
@@ -72,13 +76,13 @@ class Manufacturer(models.Model):
         return self.name
 
 
-class Project(models.Model):
-    name = models.CharField(max_length=127)
-    description = models.TextField(max_length=255)
-    label = models.CharField(max_length=15)  # to specify keyword
+# class Project(models.Model):
+#     name = models.CharField(max_length=127)
+#     description = models.TextField(max_length=255)
+#     label = models.CharField(max_length=15)  # to specify keyword
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
 class AssestsFile(models.Model):

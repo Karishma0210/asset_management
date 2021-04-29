@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     'authz',
     'dashboard',
     'my_assets',
+    'employee_side',
+    'hr_side',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

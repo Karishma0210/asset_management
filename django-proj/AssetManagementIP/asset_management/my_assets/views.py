@@ -2,7 +2,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect, reverse, HttpResponse
 from django.contrib.auth.models import auth
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+
 from django.contrib import messages
 from django.views import View
 from .models import Asset, AssestsFile, Category, Manufacturer, QRCodeImage
@@ -22,11 +22,11 @@ import traceback
 def assets(request):
     if request.user in User.objects.filter(groups__name='Organization Admin'):
         organization = request.user.from_organization
-        print(organization)
+        # print(organization)
         context = {
             'assets': Asset.objects.filter(organization=organization)
         }
-        print(context['assets'])
+        # print(context['assets'])
         return render(request, 'all_assets.html', context=context)
     else:
         return redirect(reverse('dashboard:homepage'))
@@ -89,19 +89,21 @@ class ImportAssets(View):
                         curr_line_number += 1
                         # check if assets non blank fields exists
                         # print(line)
+                        organization = request.user.from_organization
                         if line['Asset Name'] != '' and line['Category'] != '' and line['Asset Status'] != '':
                             # print(Category.objects.filter(
                             #     name=line['Category'].lower().title()))
                             category, _is_created_ = Category.objects.get_or_create(
-                                name=line['Category'].lower().title())
-
+                                name=line['Category'].lower().title(), organization=organization
+                            )
+                            category.save()
                             status = line['Asset Status'].lower()
                             isValidStatus = (
                                 status == Asset.AVAILABLE or status == Asset.IN_USE or status == Asset.NEED_MAINTENANCE)
                             # print("Is Valid status", isValidStatus)
                             if isValidStatus:
                                 # get last orgnizational asset id, add orgnization
-                                organization = request.user.from_organization
+
                                 org_code = organization.organization_code
                                 last_asset = Asset.objects.filter(
                                     relative_id__startswith=org_code).order_by('-registration_date')
@@ -118,15 +120,16 @@ class ImportAssets(View):
                                 # print(category)
                                 asset, _is_created_ = Asset.objects.get_or_create(
                                     name=line['Asset Name'].lower().title(),
-                                    category=category,
-                                    status=status
+                                    category=category
                                 )
+                                asset.status = status
                                 asset.save()
 
                                 asset.relative_id = org_code + next_number
                                 asset.organization = organization
                                 asset.manufacturer, _is_created_ = Manufacturer.objects.get_or_create(
                                     name=line['Manufacturer'].lower().title())
+                                asset.manufacturer.save()
                                 try:
                                     asset.asset_user = User.objects.get(
                                         email=line['Asset User'])
@@ -176,8 +179,7 @@ class ImportAssets(View):
                                 ).capitalize()
                                 asset.save()
                                 if fields_with_errors:  # non-empty, so has errors
-                                    messages.info(
-                                        request, "Imported with some missing fields!")
+                                    print("=======fields with errors")
                                 else:
                                     messages.info(
                                         request, "CSV file successfully imported!")
@@ -187,15 +189,14 @@ class ImportAssets(View):
                             else:
                                 fields_with_errors.append(
                                     (curr_line_number, "Asset Status"))
-                                messages.info(
-                                    request, "CSV file successfully imported!")
+                                print("Unvalid asset, will ignore this")
                         else:
                             fields_with_errors.append(
                                 (curr_line_number, "all"))
                         asset_qr = QRCodeImage(
                             asset=asset, name=request.build_absolute_uri() + asset.relative_id)
                         asset_qr.save()
-                    return redirect(reverse('my_assets:import-assets'))
+
                 except IntegrityError as ex:
                     messages.info(
                         request, "Assets mentioned already exists")
@@ -206,8 +207,8 @@ class ImportAssets(View):
                     print(ex.__class__)
                     traceback.print_exc()
                     print("MAIN TRY CATCH ERROR")
-
             importFile.delete()
+            return redirect(reverse('my_assets:import-assets'))
         return redirect(reverse('my_assets:import-assets'))
 
 

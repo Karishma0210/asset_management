@@ -41,59 +41,62 @@
             <!-- /.content-header -->
 
             <!-- Main content -->
-            <section class="content">
+            <section class="content" >
                 <div class="container-fluid">
-                    <div class="row align-content-center">
-                        <div class="card col-lg-8 align-content-center ">
+                    <div class="row">
+                        <div class="col-lg-12">
                             
                             <!-- form start -->
-                            <form method="POST" action="{% url 'my_assets:import-assets' %}" enctype="multipart/form-data">
+                            <form method="POST" action="{% url 'my_assets:import-assets' %}"
+                                enctype="multipart/form-data" class="col-lg-6">
                                 {% csrf_token %}
+                                <table class="col-lg-12">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        <!-- <label for="import-file">Upload file here:</label> -->
-                                        <div class="input-group">
-                                            <div class="custom-file">
-                                                <input type="file" class="custom-file-input" name="import-file"
-                                                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                                                    required>
-                                                <label class="custom-file-label" for="import-file">
-                                                     Choose file
+                                        <tr class="mb-3">
+                                            <td class="col-sm-6">
+                                                <label class="" for="import-file">
+                                                    Choose file: 
                                                 </label>
-                                            </div>
-                                            <div class="input-group-append">
-                                                <button class="btn btn-outline-secondary" type="button">Button</button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                            <td class="col-sm-6">
+                                                <input type="file" class="" name="import-file"
+                                                accept=".csv"
+                                                required>
+                                            </td>
+                                        </tr>
                                         <!-- <input type="file" name="import-file" class="form-control input-lg"
                                             accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" /> -->
                                     </div>
+                                    <tr class="col-sm-6 mt-3">
+                                        <td class="col-sm-6" colspan="2">
                                     <div class="form-group">
-                                        <button type="submit" class="btn btn-primary btn-lg btn-block">Upload Files</button>
+                                        <button type="submit" class="btn btn-primary btn-block">Upload Files</button>
                                     </div>
+                                    </td>
+                                    </tr>
                                 </div>
-                                <div class="card-footer">
+                                </table>
+                                <div class="row">
                                     {% for msg in messages %}
                                     <span class="alert alert-info pull-left" role="alert" style="text-align: center; padding:5px">
                                         {% if 'safe' in msg.tags %}{{ message|safe }}{% else %}{{ msg }}{% endif %}
                                     </span>
                                     {% endfor %}
                                 </div>
-                                
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        For sample, refer to -
+                                        <a href="https://1drv.ms/x/s!AnPJtw9gLupQhQ0ZqdRcwKTdSDlJ?e=Z1b93F" target="_blank">this file</a>.
+                                    </div>
+                                </div>
                             </form>
                         </div>
-                        <!-- / .card -->
+                        
                     </div>
                     <!-- /.row -->
 
-                    <div class="row align-content-center">
-                        <div class="card col-lg-8">
-                            <div class="form-group">
-                                For sample, refer to - 
-                                <a href="https://1drv.ms/x/s!AnPJtw9gLupQhQ0ZqdRcwKTdSDlJ?e=Z1b93F" target="_blank">this file</a>.
-                            </div>
-                        </div>
-                    </div>
+                    
                    
                 </div><!-- /.container-fluid -->
             </section>

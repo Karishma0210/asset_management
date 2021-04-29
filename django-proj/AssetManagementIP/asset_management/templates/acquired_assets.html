@@ -36,7 +36,8 @@
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             {% for msg in messages %}
-                            <span class="alert alert-info pull-left" role="alert" style="text-align: center; padding:5px">
+                            <span class="alert alert-info pull-left" role="alert"
+                                style="text-align: center; padding:5px">
                                 {% if 'safe' in msg.tags %}{{ message|safe }}{% else %}{{ msg }}{% endif %}
                             </span>
                             {% endfor %}
@@ -52,7 +53,9 @@
 
                     <!-- Main row -->
                     <div class="row">
-                        
+                        <div class="card col-sm-10">
+                            table here for acq assets with return status
+                        </div>
                     </div>
                     <!-- /.row (main row) -->
                 </div><!-- /.container-fluid -->

@@ -27,7 +27,7 @@ urlpatterns = [
     path('', include('dashboard.urls')),
     path('authorize/', include('authz.urls')),
     path('assets/', include('my_assets.urls')),
-
+    path('employee/', include('employee_side.urls')),
 ]
 if settings.DEBUG:
 
