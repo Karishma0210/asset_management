@@ -28,6 +28,7 @@ urlpatterns = [
     path('authorize/', include('authz.urls')),
     path('assets/', include('my_assets.urls')),
     path('employee/', include('employee_side.urls')),
+    path('requests/', include('hr_side.urls'))
 ]
 if settings.DEBUG:
 

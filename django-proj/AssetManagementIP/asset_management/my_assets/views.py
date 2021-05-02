@@ -42,27 +42,31 @@ class CreateAsset(View):
         return render(request, "create_asset_form.html", context=context)
 
     def post(self, request):
-        form = AssetCreateForm(request.POST)
-        if form.is_valid():
-            organization = request.user.from_organization
-            org_code = organization.organization_code
-            last_asset = Asset.objects.filter(
-                relative_id__startswith=org_code).order_by('-registration_date')
-            asset = form.save(commit=False)
-            if len(last_asset) > 0:
-                next_number = format(
-                    (int(last_asset[0].relative_id[3:])+1)/100000, '.5f')[-5:]
-            else:
-                next_number = '00001'
-            asset.relative_id = org_code + next_number
-            asset.organization = organization
-            asset.save()
-            asset_qr = QRCodeImage(
-                name=request.build_absolute_uri() + asset.relative_id)
-            asset_qr.save()
-            return redirect(reverse('my_assets:show-qr', kwargs={'asset_rID': "MDX00001"}))
+        organization = request.user.from_organization
+        if request.user in getAdmins(organization):
 
-        return HttpResponse("unvalid form")
+            form = AssetCreateForm(request.POST)
+            if form.is_valid():
+
+                org_code = organization.organization_code
+                last_asset = Asset.objects.filter(
+                    relative_id__startswith=org_code).order_by('-registration_date')
+                asset = form.save(commit=False)
+                if len(last_asset) > 0:
+                    next_number = format(
+                        (int(last_asset[0].relative_id[3:])+1)/100000, '.5f')[-5:]
+                else:
+                    next_number = '00001'
+                asset.relative_id = org_code + next_number
+                asset.organization = organization
+                asset.save()
+                asset_qr = QRCodeImage(
+                    name=request.build_absolute_uri() + asset.relative_id)
+                asset_qr.save()
+                return redirect(reverse('my_assets:show-asset',
+                                        kwargs={'asset_rID': asset.relative_id}))
+
+        return HttpResponse("not accesible")
 
 
 @method_decorator(login_required, name="dispatch")

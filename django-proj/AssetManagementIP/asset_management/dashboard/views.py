@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.contrib.auth.decorators import login_required
 from django.views import View
 from authz.models import User
@@ -13,7 +13,7 @@ def dashboard(request):
     if request.user in User.objects.filter(groups__name='Employee'):
         return render(request, 'acquired_assets.html')
     elif request.user in User.objects.filter(groups__name='HR'):
-        return render(request, 'hr_dashboard.html')
+        return redirect(reverse("hr_side:asset-requests"))
     elif request.user in User.objects.filter(groups__name='Organization Admin'):
         number_of_assets = len(Asset.objects.filter(
             organization=request.user.from_organization))

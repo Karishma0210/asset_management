@@ -27,6 +27,20 @@ class AssetRequest(models.Model):
                                    on_delete=models.SET_NULL,
                                    null=True,
                                    related_name='%(class)s_request_to')
+    # for status field
+    PENDING = "pending"
+    APPROVED = "approved"
+    DENIED = "denied"
+    SERVED = "served"
+
+    STATUS_CHOICES = (
+        (PENDING, 'PENDING'),
+        (APPROVED, 'APPROVED'),
+        (DENIED, 'DENIED'),
+        (SERVED, 'SERVED')
+    )
+    status = models.CharField(choices=STATUS_CHOICES,
+                              default=PENDING, max_length=32)
 
     def __str__(self):
-        return self.asset_description + "from: " + self.user + ", to:" + self.request_to
+        return self.asset_description + "from: " + self.request_from.username

@@ -33,7 +33,7 @@ class Login(View):
                 return redirect(reverse('login'))
 
         except ObjectDoesNotExist as ex:
-            print(ex.__class__)
+            # print(ex.__class__)
             messages.error(request, "user does not exists")
             return redirect(reverse('login'))
 

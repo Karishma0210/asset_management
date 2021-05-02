@@ -25,7 +25,7 @@ class RequestAsset(View):
     def post(self, request):
         asset_description = request.POST.get("assetDescrip")
         organization = request.user.from_organization
-        category = Category.objects.filter(id=request.POST.get("category"))
+        category = Category.objects.get(id=request.POST.get("category"))
 
         requirement_date = request.POST.get("rq_date")
         returning_date = request.POST.get("rt_date")

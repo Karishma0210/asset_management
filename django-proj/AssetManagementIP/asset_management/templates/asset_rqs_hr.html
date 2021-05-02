@@ -1,1 +1,220 @@
-i will show asset rqs in table
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Assets | HR Panel </title>
+
+    {% include "headtags.html" %}
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+
+    <div class="wrapper">
+
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__shake" src="{% static 'dist/img/logo.png' %}" alt="My Assets Logo" height="60"
+                width="60">
+        </div>
+
+        {% include "navbar.html" %}
+
+        {% include "hr_sidebar.html" %}
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">HR Panel</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            {% for msg in messages %}
+                            <span class="alert alert-info pull-left" role="alert"
+                                style="text-align: center; padding:5px">
+                                {% if 'safe' in msg.tags %}{{ message|safe }}{% else %}{{ msg }}{% endif %}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+
+                    <!-- Main row -->
+                    <div class="row">
+                        <div class="card col-sm-12">
+                            <div class="card-header">
+                                <h3 class="card-title">Pending Asset Requests</h3>
+                            </div>
+                            <!-- ./card-header -->
+                            {% if assetReqs|length > 0 %}
+                              
+                            
+                            <div class="card-body">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#id</th>
+                                            <th>User</th>
+                                            <th>Asset Requirement</th>
+                                            <th>Category</th>
+                                            <th>Requirement Date</th>
+                                            <th>Ex. Returning Date</th>
+                                            {% if assetReq.status != "pending" %}
+                                            <th>status</th>
+                                            {% endif %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for assetReq in assetReqs %}
+                                        <form method="POST"
+                                            action="{% url 'hr_side:approve-request' request_id=assetReq.id %}"
+                                            class="review-form">
+                                            <input type="hidden" name="request_id" value="{{assetReq.id}}" />
+                                            <tr data-widget="expandable-table" aria-expanded="false">
+                                                <td>{{assetReq.id}}</td>
+                                                <td>{{assetReq.request_from}}</td>
+                                                <td>{{assetReq.asset_description}}</td>
+                                                <td>{{assetReq.category.name}}</td>
+                                                <td>{{assetReq.requirement_date}}</td>
+                                                <td>{{assetReq.returning_date}}</td>
+                                                {% if assetReq.status != "pending" %}
+                                                <td>{{assetReq.status}}</td>
+                                                {% endif %}
+                                            </tr>
+                                            <tr class="expandable-body d-none">
+                                                <td colspan="6">
+                                                    <p style="display: none;">
+                                                        {{assetReq.rq_msg}}
+                                                    
+                                                
+                                                        {% if assetReq.status == "pending" %}
+                                                            
+                                                            <button type="submit" name="approve_btn" class="btn btn-link" >
+                                                                <i class="fa fa-check" style="color: rgb(10, 240, 10);"></i>
+                                                            </button>
+
+                                                            <button type="submit" name="reject_btn" class="btn btn-link">
+                                                                <i class="fa fa-times" style="color: red;"></i>
+                                                            </button>
+                                                        {% endif %}
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </form>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-warning" role="alert">
+                                No Pending Reqs!
+                            </div>
+                            {% endif %}
+                            <!-- /.card-body -->
+                        </div>
+                    </div>
+                    <!-- /.row (main row) -->
+                </div><!-- /.container-fluid -->
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
+    {% include "script_tags.html" %}
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === name + "=") {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            // console.log("MY COOKIE" + cookieValue);
+            return cookieValue;
+
+        };
+        $(".review-form").submit(function (e) {
+            // console.log($(e.originalEvent.submitter).attr("name"));
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+
+            let form = $(this);
+            let newForm = new FormData($(form)[0]);
+            let submitter_btn = $(e.originalEvent.submitter);
+
+            if (submitter_btn.attr("name") == "approve_btn") {
+                newForm.set("submitter_btn", submitter_btn.attr("name"));
+            } else if (submitter_btn.attr("name") == "reject_btn") {
+                newForm.set("submitter_btn", submitter_btn.attr("name"));
+            } else {
+                alert("there is some error!");
+                return;
+            }
+            const csrftoken = getCookie("csrftoken");
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+            }
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                },
+            });
+
+            let url = form.attr("action");
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: newForm, // serializes the form's elements.
+                processData: false,
+                contentType: false,
+                success: function (resp) {
+                    alert(resp);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    //alert(xhr.status);
+                    //alert(thrownError);
+                    alert("error approving product");
+                },
+            });
+            console.log($(this).find("button"));
+            // $(this).children("button").attr("disabled", true);
+            $("button", $(this)).children("button").hide();
+            if (submitter_btn.attr("name") == "approve_btn") {
+                $(this).html(
+                    '<i class="fa fa-check" style="color: rgb(10, 240, 10);"></i>'
+                );
+            } else if (submitter_btn.attr("name") == "reject_btn") {
+                $("button", $(this)).html('<i class="fa fa-times" style="color: red;"></i>');
+            }
+        });
+    </script>
+</body>
+
+</html>
