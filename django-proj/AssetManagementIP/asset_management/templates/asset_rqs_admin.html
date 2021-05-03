@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Assets | Assets Request</title>
+
+    {% include "headtags.html" %}
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+    <!-- Theme style -->
+
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+
+    <div class="wrapper">
+
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__shake" src="{% static 'dist/img/logo.png' %}" alt="My Assets Logo" height="60"
+                width="60">
+        </div>
+
+        {% include "navbar.html" %}
+
+        {% include "sidebar.html" %}
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-10">
+                            <h1 class="m-0">Asset Requests</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-2">
+                            
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    <!-- Small boxes (Stat box) -->
+                    <!-- <div class="row">
+          search fields can come
+          
+        </div> -->
+                    <!-- /.row -->
+                    <!-- Main row -->
+                    <div class="row">
+                        <!-- Left col -->
+                        <section class="col-lg-12">
+                            <!-- Database table-->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Asset Requests</h3>
+                                </div>
+
+                                <!-- /.card-header -->
+                                <div class="card-body">
+                                    <div class="col-sm-12">
+                                        {% if assetReqs|length > 0 %}
+                                          
+                                        
+                                        <table class="table table-bordered table-striped">
+                                            <form action="" method="post">
+                                                {% csrf_token %}
+                                                <div class="col-md-12 pull-right">
+                                                    <button type="submit" class="btn btn-primary pull-right">Save</button>
+                                                </div>
+                                                <thead>
+                                                    <tr role="row">
+                                                        <th>
+                                                            #Request ID
+                                                        </th>
+                                                        <th>Employee</th>
+                                                        <th>Asset Description</th>
+                                                        <th>Category</th>
+                                                        <th>Approved By</th>
+                                                        <th>
+                                                            Requirement Date
+                                                        </th>
+                                                        <th>
+                                                            Expected Return Date
+                                                        </th>
+                                                        <th>status</th>
+                                                        <th>Asset ID</th>
+                                                        <!--TO BE EDITED-->
+                                                        <th>Allocation Date</th> <!--TO BE EDITED-->
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    
+                                                    {% for assetReq in assetReqs %}
+                                                    <tr>
+                                                        <input type="hidden" name="id_{{assetReq.id}}" value="{{assetReq.id}}"
+                                                            readonly />
+                                                        <td>{{assetReq.id}}</td>
+                                                        <td>{{assetReq.request_from}}</td>
+                                                        <td>{{assetReq.asset_description}}</td>
+                                                        <td>{{assetReq.category.name}}</td>
+                                                        <td>{{assetReq.request_to}}</td>
+                                                        <td>{{assetReq.requirement_date}}</td>
+                                                        <td>{{assetReq.returning_date}}</td>
+                                                        
+                                                        <td>{{assetReq.status}}</td>
+                                                        <td>
+                                                            <input type="text" name="relative_{{assetReq.id}}" class="form-control" />
+                                                        </td>
+                                                        <td>
+                                                        <input type="date" class="form-control" name="al_date_{{assetReq.id}}" />
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </form>
+                                            
+                                        </table>
+                                        {% else %}
+                                        <div class="alert alert-warning" role="alert">
+                                            No Pending Reqs!
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- /.card-body -->
+                            </div>
+                            <!-- /.card -->
+                            <!-- /.card -->
+
+                    </div>
+                    <!-- /.row (main row) -->
+                </div><!-- /.container-fluid -->
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
+    {% include "script_tags.html" %}
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+    <script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+    <script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+    <script>
+        $(function () {
+            $("#example1").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            $('#example2').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+            });
+        });
+    </script>
+</body>
+
+</html>

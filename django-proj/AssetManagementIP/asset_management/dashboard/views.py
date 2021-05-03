@@ -4,6 +4,7 @@ from django.views import View
 from authz.models import User
 from django.db.models import Q
 from my_assets.models import Asset
+from employee_side.models import AssetRequest
 
 # Create your views here.
 
@@ -30,7 +31,8 @@ def dashboard(request):
                 status=Asset.NEED_MAINTENANCE)
         )
         )
-        pending = len([])
+        pending = len(AssetRequest.objects.filter(Q(
+            status=AssetRequest.PENDING) | Q(status=AssetRequest.APPROVED)))
         context = {
             'number_of_assets': number_of_assets,
             'in_use': in_use,

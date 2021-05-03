@@ -17,7 +17,7 @@ class AssetRequest(models.Model):
                                  null=True, blank=True)
     requirement_date = models.DateField()
     returning_date = models.DateField()
-
+    allocation_date = models.DateField(null=True)
     rq_msg = models.TextField(max_length=200, blank=True,
                               null=True)  # for any comments
     request_from = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -31,13 +31,15 @@ class AssetRequest(models.Model):
     PENDING = "pending"
     APPROVED = "approved"
     DENIED = "denied"
+    ALLOCATED = "allocated"
     SERVED = "served"
 
     STATUS_CHOICES = (
         (PENDING, 'PENDING'),
         (APPROVED, 'APPROVED'),
         (DENIED, 'DENIED'),
-        (SERVED, 'SERVED')
+        (SERVED, 'SERVED'),
+        (ALLOCATED, 'ALLOCATED'),
     )
     status = models.CharField(choices=STATUS_CHOICES,
                               default=PENDING, max_length=32)

@@ -12,6 +12,7 @@ from authz.models import User
 from django.db.utils import IntegrityError, OperationalError
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from employee_side.models import AssetRequest
 import csv
 import datetime
 import traceback
@@ -30,6 +31,37 @@ def assets(request):
         return render(request, 'all_assets.html', context=context)
     else:
         return redirect(reverse('dashboard:homepage'))
+
+
+@method_decorator(login_required, name="dispatch")
+class Requests(View):
+    def get(self, request):
+        if request.user in getAdmins(request.user.from_organization):
+            assetReqs = AssetRequest.objects.filter(
+                status=AssetRequest.APPROVED)
+            # print(assetReqs)
+            context = {
+                'assetReqs': assetReqs
+            }
+            return render(request, "asset_rqs_admin.html", context=context)
+        else:
+            return redirect(reverse('dashboard:homepage'))
+
+    def post(self, request):
+        # assetReq_ids = [v for k, v in request.POST.items()
+        #                if k.startswith('id_')]
+        # assetReq_relative_ids = [v for k, v in request.POST.items()
+        #                          if k.startswith('relative_')]
+        # assetReq_al_dates = [v for k, v in request.POST.items()
+        #                          if k.startswith('al_date_')]
+
+        # if len(assetReq_al_dates)==len(assetReq_relative_ids):
+        #     print("same length")
+
+        #     for assetReq_id in assetReq_ids:
+        #         assetReq = AssetRequest.objects.get(id=assetReq_id)
+        #         asset = Asset.objects.get(relative_id=)
+        return redirect(reverse('my_assets:asset-reqs'))
 
 
 @method_decorator(login_required, name="dispatch")
@@ -122,7 +154,7 @@ class ImportAssets(View):
 
                                 #--------save actual data now-------#
                                 # print(category)
-                                asset, _is_created_ = Asset.objects.get_or_create(
+                                asset, _is_created_asset = Asset.objects.get_or_create(
                                     name=line['Asset Name'].lower().title(),
                                     category=category
                                 )
@@ -131,7 +163,7 @@ class ImportAssets(View):
 
                                 asset.relative_id = org_code + next_number
                                 asset.organization = organization
-                                asset.manufacturer, _is_created_ = Manufacturer.objects.get_or_create(
+                                asset.manufacturer, _is_created_man = Manufacturer.objects.get_or_create(
                                     name=line['Manufacturer'].lower().title())
                                 asset.manufacturer.save()
                                 try:
@@ -204,6 +236,7 @@ class ImportAssets(View):
                 except IntegrityError as ex:
                     messages.info(
                         request, "Assets mentioned already exists")
+                    traceback.print_exc()
                 except OperationalError as ex:
                     messages.info(
                         request, "Database is locked!, try again")
