@@ -1,2 +1,2 @@
 # asset_management
-my IP
+My Individual project, Check in master branch
